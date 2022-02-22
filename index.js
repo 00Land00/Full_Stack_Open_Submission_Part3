@@ -3,10 +3,10 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 
-app.use(express.static('build'))
+
 app.use(cors())
 app.use(express.json())
-
+app.use(express.static('build'))
 /*
 const tinyFormat = (tokens, req, res) => {
   return [
