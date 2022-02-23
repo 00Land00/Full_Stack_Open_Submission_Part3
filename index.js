@@ -84,22 +84,15 @@ app.post('/api/persons', (request, response) => {
       error: 'missing name or phone number'
     })
   }
-  
-  const checkDupeNames = people.some(person => person.name == body.name)
-  if (checkDupeNames) {
-    return response.status(400).json({
-      error: 'name must be unique'
-    })
-  }
 
-  const person = {
-    "id": Math.floor(Math.random() * 100000),
+  const person = new Person({
     "name": body.name,
     "number": body.number
-  }
+  })
 
-  people = people.concat(person)
-  response.json(person)
+  person.save().then(savedPerson => {
+    response.json(savedPerson)
+  })
 })
 
 const PORT = process.env.PORT
