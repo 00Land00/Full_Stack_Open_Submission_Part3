@@ -1,8 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
-
+const Person = require('./models/person')
 
 app.use(cors())
 app.use(express.json())
@@ -51,21 +52,21 @@ let people = [
 ]
 
 app.get('/api/persons', (request, response) => {
-  response.json(people)
+  Person.find({}).then(people => {
+    response.json(people)
+  })
 })
 
 app.get('/info', (request, response) => {
-  response.send(`<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`)
+  Person.find({}).then(people => {
+     response.send(`<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`)
+  })
 })
 
 app.get('/api/persons/:id', (request, response) => {
-  const id = Number(request.params.id)
-  const person = people.find(person => person.id === id)
-
-  if (!person) {
-    return response.status(404).end()
-  }
-  response.json(person)
+  Person.findById(request.params.id).then(person => {
+    response.json(person)
+  })
 })
 
 app.delete('/api/persons/:id', (request, response) => {
@@ -101,7 +102,7 @@ app.post('/api/persons', (request, response) => {
   response.json(person)
 })
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
 })
