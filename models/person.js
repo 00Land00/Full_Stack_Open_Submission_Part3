@@ -10,10 +10,9 @@ mongoose.connect(url)
   })
 
 const checkPhoneNum = val => {
-  let isValidPhoneNum = false
-  isValidPhoneNum = /\d{2}-\d{6,}/.test(val)
-  isValidPhoneNum = /\d{3}-\d{6,}/.test(val)
-  return isValidPhoneNum
+  let isValidPhoneNum1 = /\d{2}-\d{6,}/.test(val)
+  let isValidPhoneNum2 = /\d{3}-\d{6,}/.test(val)
+  return isValidPhoneNum1 || isValidPhoneNum2
 }
 
 const personSchema = new mongoose.Schema({
