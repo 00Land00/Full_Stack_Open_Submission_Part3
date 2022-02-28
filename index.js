@@ -4,6 +4,7 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const Person = require('./models/person')
+const { response } = require('express')
 
 app.use(cors())
 app.use(express.json())
@@ -78,7 +79,7 @@ app.put('/api/persons/:id', (request, response, next) => {
     "number": body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person).then(updatedPerson => {
+  Person.findByIdAndUpdate(request.params.id, person, {new: true, runValidators: true, context: 'query'}).then(updatedPerson => {
     response.json(updatedPerson)
   }).catch(error => next(error))
 })
@@ -90,10 +91,12 @@ const unknownEndpoint = (req, res) => {
 app.use(unknownEndpoint)
 
 const errorHandler = (er, req, res, next) => {
-  console.error(er.message)
+  console.error('yo', er.message)
 
   if (er.name === 'CastError') {
     return res.status(400).send({error: 'malformatted id'})
+  } else if (er.name === 'ValidationError') {
+    return res.status(400).json({error: er.message})
   }
 
   next(er)
