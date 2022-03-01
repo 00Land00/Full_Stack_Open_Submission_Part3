@@ -4,7 +4,6 @@ const morgan = require('morgan')
 const cors = require('cors')
 const app = express()
 const Person = require('./models/person')
-const { response } = require('express')
 
 app.use(cors())
 app.use(express.json())
@@ -37,7 +36,7 @@ app.get('/api/persons', (request, response, next) => {
 
 app.get('/info', (request, response, next) => {
   Person.find({}).then(people => {
-     response.send(`<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`)
+    response.send(`<p>Phonebook has info for ${people.length} people</p><p>${new Date(Date.now())}</p>`)
   }).catch(error => next(error))
 })
 
@@ -48,7 +47,7 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  Person.findByIdAndRemove(request.params.id).then(person => {
+  Person.findByIdAndRemove(request.params.id).then(() => {
     response.status(204).end()
   }).catch(error => next(error))
 })
@@ -63,8 +62,8 @@ app.post('/api/persons', (request, response, next) => {
   }
 
   const person = new Person({
-    "name": body.name,
-    "number": body.number
+    'name': body.name,
+    'number': body.number
   })
 
   person.save().then(savedPerson => {
@@ -75,17 +74,17 @@ app.post('/api/persons', (request, response, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
   const body = request.body
   const person = {
-    "name": body.name,
-    "number": body.number
+    'name': body.name,
+    'number': body.number
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, {new: true, runValidators: true, context: 'query'}).then(updatedPerson => {
+  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' }).then(updatedPerson => {
     response.json(updatedPerson)
   }).catch(error => next(error))
 })
 
 const unknownEndpoint = (req, res) => {
-  res.status(400).send({error: 'unknown endpoint'})
+  res.status(400).send({ error: 'unknown endpoint' })
 }
 
 app.use(unknownEndpoint)
@@ -94,9 +93,9 @@ const errorHandler = (er, req, res, next) => {
   console.error('yo', er.message)
 
   if (er.name === 'CastError') {
-    return res.status(400).send({error: 'malformatted id'})
+    return res.status(400).send({ error: 'malformatted id' })
   } else if (er.name === 'ValidationError') {
-    return res.status(400).json({error: er.message})
+    return res.status(400).json({ error: er.message })
   }
 
   next(er)
@@ -104,6 +103,7 @@ const errorHandler = (er, req, res, next) => {
 
 app.use(errorHandler)
 
+// eslint-disable-next-line no-undef
 const PORT = process.env.PORT
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
